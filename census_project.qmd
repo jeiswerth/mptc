@@ -1,0 +1,48 @@
+---
+title: "api"
+format: html
+author: "Jerry Eiswerth"
+date: "November 2, 2025"
+editor: visual
+---
+
+```{r}
+library(tidycensus)
+library(tidyverse)
+```
+
+```{r}
+# Look at the available variables
+v <- load_variables(2020, "dhc", cache = TRUE)
+head(v)
+```
+
+```{r}
+renters <- get_decennial(geography = "county", 
+                       variables = "H12_010N",
+                       state = "NC",
+                       year = 2020,
+                       geometry = TRUE,
+                       sumfile = "dhc")
+```
+
+```{r}
+# Let's make a map
+renters %>%
+  ggplot(aes(fill = value)) + 
+  geom_sf(color = NA) + 
+  scale_fill_viridis_c(option = "turbo") +
+  labs(title = "Number of Renter Occupied Housing Units",
+       subtitle = "North Carolina, 2020")
+```
+
+```{r}
+# Now a histogram
+renters %>%
+  ggplot(aes(x = value)) + 
+  geom_histogram(bins = 50) +
+  labs(title = "Distribution of The Number of Renter Occupied Housing Units by County",
+       subtitle = "North Carolina, 2020")
+```
+
+It looks like most of the counties do not have a lot of renters (but maybe there are also less houses / a smaller population too).
